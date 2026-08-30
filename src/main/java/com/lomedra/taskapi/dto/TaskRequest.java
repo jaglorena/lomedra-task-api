@@ -3,7 +3,7 @@ package com.lomedra.taskapi.dto;
 import jakarta.validation.constraints.NotBlank;
 
 public class TaskRequest {
-    @NotBlank(message = "Title required and cannot be emty")
+    @NotBlank(message = "Title is required and cannot be empty")
     private String title;
     private String descriprion;
     private boolean isCompleted;
