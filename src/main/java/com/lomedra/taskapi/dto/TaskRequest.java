@@ -5,23 +5,23 @@ import jakarta.validation.constraints.NotBlank;
 public class TaskRequest {
     @NotBlank(message = "Title is required and cannot be empty")
     private String title;
-    private String descriprion;
+    private String description;
     private boolean isCompleted;
 
     public TaskRequest() {
     }
 
-    public TaskRequest(String title, String descriprion, boolean isCompleted) {
+    public TaskRequest(String title, String description, boolean isCompleted) {
         this.title = title;
-        this.descriprion = descriprion;
+        this.description = description;
         this.isCompleted = isCompleted;
     }
      public String getTitle() {
         return title;
      }
 
-     public String getDescriprion() {
-        return descriprion;
+     public String getDescription() {
+        return description;
      }
 
      public boolean getIsCompleted() {
@@ -32,8 +32,8 @@ public class TaskRequest {
         this.title = title;
     }
 
-    public void setDescriprion(String descriprion) {
-        this.descriprion = descriprion;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setIsCompleted(boolean isCompleted) {

@@ -11,7 +11,7 @@ public final class TaskMapper {
     public static Task toEntity(TaskRequest request) {
         return new Task(
                 request.getTitle(),
-                request.getDescriprion(),
+                request.getDescription(),
                 request.getIsCompleted()
         );
     }
