@@ -13,6 +13,8 @@ La aplicación permite crear, consultar, actualizar y eliminar tareas mediante e
 - Separación por capas entre controller, service y repository.
 - Pruebas automatizadas con Spring Boot y MockMvc.
 - Documentación interactiva mediante OpenAPI y Swagger UI.
+- Ejecución mediante Docker. 
+- Integración continua con GitHub Actions.
 
 ## Tecnologías utilizadas
 
@@ -29,6 +31,9 @@ La aplicación permite crear, consultar, actualizar y eliminar tareas mediante e
 | MockMvc | Pruebas de los endpoints REST |
 | OpenAPI / Swagger UI | Documentación y prueba interactiva de la API |
 | Git / GitHub | Control de versiones y gestión del repositorio |
+| Docker | Construcción y ejecución de la API en un contenedor |
+| GitHub Actions | Ejecución automática de pruebas en cada push y pull request |
+
 
 ## Decisiones técnicas
 
@@ -175,12 +180,18 @@ Si el identificador solicitado no corresponde a una tarea existente, la API devu
 {
   "timestamp": "2026-08-29T00:00:00",
   "status": 404,
-  "message": "Task with id 999 was not found",
+  "message": "Task with id 123 was not found",
   "errors": {}
 }
 ```
 
 El manejo de estas excepciones se encuentra centralizado para mantener un formato de error consistente en toda la API.
+
+## Persistencia
+
+La aplicación utiliza H2 como base de datos ligera, evitando depender de un servidor de base de datos externo para ejecutar el proyecto.
+
+Con la configuración actual, los datos se mantienen en memoria durante la ejecución de la aplicación y se reinician al detenerla. Esto permite comenzar con un entorno limpio cada vez que se inicia el proyecto.
 
 ## Ejecución local
 
@@ -219,11 +230,61 @@ Por ejemplo, para consultar todas las tareas:
 http://localhost:8080/api/tasks
 ```
 
+
+## Ejecución con Docker
+
+El proyecto incluye un `Dockerfile` para construir y ejecutar la API dentro de un contenedor. Para utilizar esta opción es necesario tener Docker instalado y en ejecución.
+
+### Construir la imagen
+
+Desde la raíz del proyecto:
+
+```bash
+docker build -t lomedra-task-api .
+```
+
+### Ejecutar el contenedor
+
+```bash
+docker run --name lomedra-task-api-container -p 8080:8080 lomedra-task-api
+```
+
+La API estará disponible en:
+
+```text
+http://localhost:8080
+```
+
+Y Swagger UI en:
+
+```text
+http://localhost:8080/swagger-ui.html
+```
+
+### Detener y eliminar el contenedor
+
+Para detenerlo:
+
+```bash
+docker stop lomedra-task-api-container
+```
+
+Para eliminar el contenedor después de detenerlo:
+
+```bash
+docker rm lomedra-task-api-container
+```
+
+La imagen `lomedra-task-api` permanece disponible y puede utilizarse nuevamente para crear otro contenedor.
+
 ## Pruebas automatizadas
 
 El proyecto incluye pruebas automatizadas para verificar comportamientos importantes de la API, entre ellos:
 
 - Creación exitosa de una tarea.
+- Listado de tareas.
+- Actualización de una tarea.
+- Eliminación de una tarea.
 - Rechazo de solicitudes con `title` vacío.
 - Respuesta `404 Not Found` cuando una tarea no existe.
 
@@ -273,8 +334,14 @@ DELETE /api/tasks/{id}
 
 Los endpoints no dependen obligatoriamente de este orden; el flujo anterior únicamente facilita una prueba completa de las operaciones disponibles.
 
-## Persistencia
+## Integración continua
 
-La aplicación utiliza H2 como base de datos ligera, evitando depender de un servidor de base de datos externo para ejecutar el proyecto.
+El proyecto utiliza GitHub Actions para ejecutar automáticamente las pruebas en cada `push` y `pull_request`.
 
-Con la configuración actual, los datos se mantienen en memoria durante la ejecución de la aplicación y se reinician al detenerla. Esto permite comenzar con un entorno limpio cada vez que se inicia el proyecto.
+El workflow utiliza Java 21 y ejecuta:
+
+```bash
+./mvnw -B clean test
+```
+
+Esto permite verificar automáticamente que el proyecto compile correctamente y que las pruebas continúen pasando al realizar nuevos cambios.
